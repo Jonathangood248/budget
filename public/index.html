@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pärt-Anton - House Budget Tracker</title>
+
+  <!-- Link to our CSS file for styling -->
+  <link rel="stylesheet" href="style.css">
+
+  <!--
+    BEGINNER EXPLANATION:
+    This is HTML - the structure of the web page (like the skeleton of a house).
+    - <head> contains metadata (title, links to CSS)
+    - <body> contains the visible content
+    - <div> are containers (like boxes) that group content together
+  -->
+</head>
+<body>
+  <!-- ===================================== -->
+  <!-- MAIN CONTAINER -->
+  <!-- ===================================== -->
+  <div class="container">
+
+    <!-- ===================================== -->
+    <!-- HEADER WITH WELCOME MESSAGE -->
+    <!-- ===================================== -->
+    <header class="header">
+      <h1 class="headline">Welcome to Pärt-Anton!</h1>
+      <p class="subtitle">Your House Move Budget & Planning Tool</p>
+    </header>
+
+    <!-- ===================================== -->
+    <!-- TOP BUDGET COUNTER (PROMINENT) -->
+    <!-- ===================================== -->
+    <section class="totals-section top-totals">
+      <div class="totals-grid">
+        <div class="total-card total-cost-card">
+          <div class="total-label">Total Budget</div>
+          <div class="total-value" id="top-total-cost">0 SEK</div>
+        </div>
+        <div class="total-card">
+          <div class="total-label">Purchased</div>
+          <div class="total-value" id="top-purchased-count">0 / 0</div>
+        </div>
+        <div class="total-card">
+          <div class="total-label">Remaining to Buy</div>
+          <div class="total-value" id="top-unpurchased-cost">0 SEK</div>
+        </div>
+      </div>
+    </section>
+
+    <!--
+      WHAT ARE IDs?
+      id="top-total-cost" gives this element a unique name.
+      JavaScript can find it using: document.getElementById('top-total-cost')
+      Then we can change its content to show the actual total.
+    -->
+
+    <!-- ===================================== -->
+    <!-- ADD NEW PURCHASE FORM -->
+    <!-- ===================================== -->
+    <section class="add-purchase-section">
+      <h2 class="section-title">Add New Purchase</h2>
+      <form class="add-purchase-form" id="add-purchase-form">
+        <div class="form-grid">
+          <input
+            type="text"
+            id="new-name"
+            placeholder="Product Name *"
+            required
+            class="form-input"
+          >
+          <div class="link-input-container">
+            <input
+              type="url"
+              id="new-link"
+              placeholder="Product Link (optional)"
+              class="form-input"
+            >
+            <div id="extraction-status" class="extraction-status" style="display: none;"></div>
+          </div>
+          <input
+            type="number"
+            id="new-cost"
+            placeholder="Cost (SEK) *"
+            required
+            min="0"
+            step="0.01"
+            class="form-input"
+          >
+          <textarea
+            id="new-comments"
+            placeholder="Comments (optional)"
+            rows="1"
+            class="form-input"
+          ></textarea>
+          <label class="checkbox-label">
+            <input
+              type="checkbox"
+              id="new-bought"
+              class="form-checkbox"
+            >
+            <span>Already purchased?</span>
+          </label>
+          <button type="submit" class="btn btn-primary">Add Purchase</button>
+        </div>
+      </form>
+    </section>
+
+    <!--
+      FORM EXPLAINED:
+      - <form> groups input fields together
+      - <input type="text"> = text field
+      - <input type="number"> = number field (only allows numbers)
+      - <textarea> = multi-line text field
+      - <button type="submit"> = submit button (triggers form submission)
+      - required = field must be filled in
+      - placeholder = hint text shown in empty fields
+    -->
+
+    <!-- ===================================== -->
+    <!-- PURCHASES TABLE -->
+    <!-- ===================================== -->
+    <section class="purchases-section">
+      <h2 class="section-title">Your Purchases</h2>
+
+      <!-- Loading state (shown while fetching data) -->
+      <div id="loading" class="loading">
+        <div class="loading-spinner"></div>
+        <p>Loading purchases...</p>
+      </div>
+
+      <!-- Error state (shown if something goes wrong) -->
+      <div id="error" class="error-message" style="display: none;">
+        <p>Failed to load purchases. Please try refreshing the page.</p>
+      </div>
+
+      <!-- Empty state (shown when there are no purchases) -->
+      <div id="empty-state" class="empty-state" style="display: none;">
+        <p>No purchases yet. Add your first purchase above!</p>
+      </div>
+
+      <!-- Table container (hidden until data loads) -->
+      <div id="table-container" class="table-container" style="display: none;">
+        <table class="purchases-table">
+          <thead>
+            <tr>
+              <th>Product Name</th>
+              <th>Link</th>
+              <th>Cost (SEK)</th>
+              <th>Status</th>
+              <th>Comments</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="purchases-tbody">
+            <!-- Purchases will be inserted here by JavaScript -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!--
+      TABLE EXPLAINED:
+      - <table> creates a table
+      - <thead> = table header (column names)
+      - <tbody> = table body (data rows)
+      - <tr> = table row
+      - <th> = table header cell (bold, centered)
+      - <td> = table data cell (regular text)
+
+      JavaScript will dynamically add <tr> elements to <tbody> with purchase data.
+    -->
+
+    <!-- ===================================== -->
+    <!-- BOTTOM BUDGET COUNTER (IDENTICAL TO TOP) -->
+    <!-- ===================================== -->
+    <section class="totals-section bottom-totals">
+      <div class="totals-grid">
+        <div class="total-card total-cost-card">
+          <div class="total-label">Total Budget</div>
+          <div class="total-value" id="bottom-total-cost">0 SEK</div>
+        </div>
+        <div class="total-card">
+          <div class="total-label">Purchased</div>
+          <div class="total-value" id="bottom-purchased-count">0 / 0</div>
+        </div>
+        <div class="total-card">
+          <div class="total-label">Remaining to Buy</div>
+          <div class="total-value" id="bottom-unpurchased-cost">0 SEK</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================== -->
+    <!-- FOOTER -->
+    <!-- ===================================== -->
+    <footer class="footer">
+      <p>Made with care for your new home</p>
+    </footer>
+
+  </div>
+
+  <!-- ===================================== -->
+  <!-- JAVASCRIPT -->
+  <!-- ===================================== -->
+  <!-- Link to our JavaScript file (loaded at the end so HTML loads first) -->
+  <script src="app.js"></script>
+
+  <!--
+    WHY LOAD JAVASCRIPT AT THE END?
+    When the browser reads HTML top-to-bottom, if JavaScript loads first,
+    it might try to access elements that haven't loaded yet.
+    By putting <script> at the end, all HTML elements exist before JS runs.
+  -->
+</body>
+</html>

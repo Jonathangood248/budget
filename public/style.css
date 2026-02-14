@@ -1,0 +1,686 @@
+/* =====================================================
+   STYLE.CSS - Apple-Inspired Design
+   =====================================================
+   This file styles the Pärt-Anton budget tracker.
+
+   BEGINNER EXPLANATION:
+   CSS (Cascading Style Sheets) controls how HTML looks.
+   - HTML = structure (skeleton)
+   - CSS = appearance (paint, wallpaper, furniture)
+
+   CSS SYNTAX:
+   selector {
+     property: value;
+   }
+
+   Example:
+   h1 {
+     color: blue;        ← Makes all <h1> elements blue
+     font-size: 32px;    ← Sets font size to 32 pixels
+   }
+*/
+
+/* ===================================== */
+/* RESET & BASE STYLES */
+/* ===================================== */
+
+/* Reset default browser styles for consistency across browsers */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/*
+  WHAT IS box-sizing: border-box?
+  It makes width/height calculations easier.
+  Without it: width = content only
+  With it: width = content + padding + border
+  (Much more intuitive!)
+*/
+
+/* ===================================== */
+/* TYPOGRAPHY & COLORS (APPLE STYLE) */
+/* ===================================== */
+
+:root {
+  /* Color Palette - Apple-inspired neutral tones */
+  --bg-primary: #ffffff;
+  --bg-secondary: #fafafa;
+  --bg-tertiary: #f5f5f7;
+
+  --text-primary: #1d1d1f;
+  --text-secondary: #6e6e73;
+  --text-tertiary: #86868b;
+
+  --accent-blue: #007aff;
+  --accent-blue-hover: #0051d5;
+  --accent-green: #34c759;
+  --accent-red: #ff3b30;
+
+  --border-light: #d2d2d7;
+  --border-medium: #b0b0b5;
+
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+  --shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.08);
+
+  /* Spacing */
+  --spacing-xs: 8px;
+  --spacing-sm: 12px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 48px;
+
+  /* Border Radius */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+}
+
+/*
+  WHAT ARE CSS VARIABLES?
+  Variables let you reuse values throughout your CSS.
+  Define: --accent-blue: #007aff;
+  Use: color: var(--accent-blue);
+
+  Benefits: Change one value, updates everywhere!
+*/
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  font-size: 16px;
+  min-height: 100vh;
+}
+
+/*
+  FONT STACK EXPLAINED:
+  -apple-system = San Francisco (Apple's font on Mac/iOS)
+  BlinkMacSystemFont = Chrome on Mac
+  Segoe UI = Windows
+  Roboto = Android
+  The browser uses the first available font from the list.
+*/
+
+/* ===================================== */
+/* CONTAINER & LAYOUT */
+/* ===================================== */
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--spacing-2xl) var(--spacing-lg);
+}
+
+/*
+  max-width: 1200px = container never gets wider than 1200px
+  margin: 0 auto = centers the container horizontally
+  0 = top/bottom margin, auto = left/right margin (auto centers it)
+*/
+
+/* ===================================== */
+/* HEADER */
+/* ===================================== */
+
+.header {
+  text-align: center;
+  margin-bottom: var(--spacing-2xl);
+}
+
+.headline {
+  font-size: 48px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+/*
+  letter-spacing: -0.02em = tighten spacing between letters slightly
+  em = relative to font size (0.02em = 2% of font size)
+  Negative value = tighter, positive = looser
+*/
+
+.subtitle {
+  font-size: 20px;
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+/* ===================================== */
+/* TOTALS SECTION (TOP & BOTTOM) */
+/* ===================================== */
+
+.totals-section {
+  background: var(--bg-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
+  margin-bottom: var(--spacing-xl);
+  box-shadow: var(--shadow-md);
+}
+
+.totals-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-lg);
+}
+
+/*
+  GRID EXPLAINED:
+  display: grid = use CSS Grid layout (modern, powerful layout system)
+  grid-template-columns: repeat(3, 1fr) = create 3 equal columns
+    - repeat(3, ...) = repeat 3 times
+    - 1fr = one fraction (equal parts)
+  gap: 24px = space between grid items
+
+  Result: 3 cards side-by-side with equal width
+*/
+
+.total-card {
+  text-align: center;
+  padding: var(--spacing-lg);
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
+  transition: transform 0.2s ease;
+}
+
+.total-card:hover {
+  transform: translateY(-2px);
+}
+
+/*
+  HOVER EFFECT:
+  When you hover over a card, it moves up 2 pixels.
+  transform: translateY(-2px) = move up (negative Y)
+  transition = smooth animation (0.2 seconds)
+*/
+
+.total-cost-card {
+  background: linear-gradient(135deg, #007aff 0%, #0051d5 100%);
+  color: white;
+}
+
+/*
+  linear-gradient = smooth color transition
+  135deg = diagonal direction
+  #007aff 0% = start color
+  #0051d5 100% = end color
+*/
+
+.total-cost-card .total-label,
+.total-cost-card .total-value {
+  color: white;
+}
+
+.total-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: var(--spacing-xs);
+}
+
+.total-value {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* ===================================== */
+/* ADD PURCHASE FORM */
+/* ===================================== */
+
+.add-purchase-section {
+  background: var(--bg-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
+  margin-bottom: var(--spacing-xl);
+  box-shadow: var(--shadow-md);
+}
+
+.section-title {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: var(--spacing-lg);
+  color: var(--text-primary);
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-md);
+}
+
+/*
+  2-column grid for form fields
+  On smaller screens, we'll switch to 1 column (see responsive section below)
+*/
+
+.form-input {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  font-size: 16px;
+  font-family: inherit;
+  transition: all 0.2s ease;
+  background: var(--bg-primary);
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+}
+
+/*
+  FOCUS STATE:
+  When you click into an input field, it gets a blue border and subtle glow.
+  outline: none = removes default browser outline
+  box-shadow = blue glow effect (0.1 = 10% opacity)
+*/
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.form-checkbox {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+/* ===================================== */
+/* BUTTONS */
+/* ===================================== */
+
+.btn {
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.btn-primary {
+  background: var(--accent-blue);
+  color: white;
+  grid-column: span 2; /* Span across 2 columns in the grid */
+}
+
+.btn-primary:hover {
+  background: var(--accent-blue-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+/*
+  BUTTON STATES:
+  :hover = when mouse is over button
+  :active = when button is being clicked
+  Transform creates subtle movement for better UX
+*/
+
+.btn-delete {
+  background: transparent;
+  color: var(--accent-red);
+  border: 1px solid var(--accent-red);
+  padding: 6px 12px;
+  font-size: 14px;
+}
+
+.btn-delete:hover {
+  background: var(--accent-red);
+  color: white;
+}
+
+/* ===================================== */
+/* PURCHASES TABLE */
+/* ===================================== */
+
+.purchases-section {
+  background: var(--bg-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
+  margin-bottom: var(--spacing-xl);
+  box-shadow: var(--shadow-md);
+}
+
+.table-container {
+  overflow-x: auto; /* Allows horizontal scrolling on small screens */
+}
+
+.purchases-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: var(--spacing-lg);
+}
+
+/*
+  border-collapse: collapse = merges adjacent cell borders into one
+  Without it, you'd see double borders between cells
+*/
+
+.purchases-table thead {
+  background: var(--bg-tertiary);
+}
+
+.purchases-table th {
+  padding: var(--spacing-md);
+  text-align: left;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 2px solid var(--border-light);
+}
+
+.purchases-table td {
+  padding: var(--spacing-md);
+  border-bottom: 1px solid var(--border-light);
+  font-size: 15px;
+}
+
+.purchases-table tbody tr {
+  transition: background-color 0.15s ease;
+}
+
+.purchases-table tbody tr:hover {
+  background: var(--bg-tertiary);
+}
+
+/*
+  Hover effect: Row gets light gray background when you hover over it
+  Makes it easier to see which row you're looking at
+*/
+
+/* Editable cells get a subtle indicator on hover */
+.purchases-table td.editable {
+  cursor: pointer;
+  position: relative;
+}
+
+.purchases-table td.editable:hover {
+  background: rgba(0, 122, 255, 0.05);
+}
+
+/* Input fields when editing inline */
+.purchases-table input[type="text"],
+.purchases-table input[type="number"],
+.purchases-table textarea {
+  width: 100%;
+  padding: var(--spacing-xs);
+  border: 1px solid var(--accent-blue);
+  border-radius: var(--radius-sm);
+  font-size: 15px;
+  font-family: inherit;
+}
+
+/* Product link styling */
+.product-link {
+  color: var(--accent-blue);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.product-link:hover {
+  color: var(--accent-blue-hover);
+  text-decoration: underline;
+}
+
+/* Status badge */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.status-badge.bought {
+  background: rgba(52, 199, 89, 0.1);
+  color: var(--accent-green);
+}
+
+.status-badge.not-bought {
+  background: rgba(142, 142, 147, 0.1);
+  color: var(--text-tertiary);
+}
+
+/* Status checkbox */
+.status-checkbox {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+/* ===================================== */
+/* LOADING, ERROR, EMPTY STATES */
+/* ===================================== */
+
+.loading {
+  text-align: center;
+  padding: var(--spacing-2xl);
+  color: var(--text-secondary);
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  margin: 0 auto var(--spacing-md);
+  border: 4px solid var(--border-light);
+  border-top-color: var(--accent-blue);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/*
+  ANIMATION EXPLAINED:
+  @keyframes defines an animation
+  "spin" = animation name
+  to { transform: rotate(360deg) } = rotate 360 degrees
+  animation: spin 0.8s linear infinite = run "spin" animation
+    - 0.8s = duration (0.8 seconds)
+    - linear = constant speed
+    - infinite = repeat forever
+*/
+
+.error-message {
+  background: rgba(255, 59, 48, 0.1);
+  color: var(--accent-red);
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-md);
+  text-align: center;
+}
+
+.empty-state {
+  text-align: center;
+  padding: var(--spacing-2xl);
+  color: var(--text-secondary);
+  font-size: 18px;
+}
+
+/* ===================================== */
+/* FOOTER */
+/* ===================================== */
+
+.footer {
+  text-align: center;
+  padding: var(--spacing-xl) 0;
+  color: var(--text-tertiary);
+  font-size: 14px;
+}
+
+/* ===================================== */
+/* RESPONSIVE DESIGN (MOBILE-FRIENDLY) */
+/* ===================================== */
+
+/* Tablet screens (below 768px) */
+@media (max-width: 768px) {
+  .headline {
+    font-size: 36px;
+  }
+
+  .totals-grid {
+    grid-template-columns: 1fr; /* Stack cards vertically on mobile */
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr; /* Single column form on mobile */
+  }
+
+  .btn-primary {
+    grid-column: span 1; /* Button takes 1 column on mobile */
+  }
+
+  .total-value {
+    font-size: 28px;
+  }
+}
+
+/*
+  MEDIA QUERIES EXPLAINED:
+  @media (max-width: 768px) = apply these styles only on screens 768px or smaller
+  This makes the layout responsive (adapts to screen size)
+
+  Mobile changes:
+  - Headline smaller (36px instead of 48px)
+  - Totals stack vertically (1 column instead of 3)
+  - Form fields stack vertically (1 column instead of 2)
+*/
+
+/* Small mobile screens (below 480px) */
+@media (max-width: 480px) {
+  .container {
+    padding: var(--spacing-lg) var(--spacing-md);
+  }
+
+  .headline {
+    font-size: 28px;
+  }
+
+  .subtitle {
+    font-size: 16px;
+  }
+
+  .purchases-table th,
+  .purchases-table td {
+    padding: var(--spacing-sm);
+    font-size: 13px;
+  }
+}
+
+/* ===================================== */
+/* LINK EXTRACTION UI - NEW FEATURE */
+/* ===================================== */
+
+.link-input-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.extraction-status {
+  display: none;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 500;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.extraction-status {
+  display: flex;
+  align-items: center;
+}
+
+/* Loading state */
+.extraction-loading {
+  background: rgba(0, 122, 255, 0.1);
+  color: var(--accent-blue);
+}
+
+.extraction-spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(0, 122, 255, 0.3);
+  border-top-color: var(--accent-blue);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+/* Success state */
+.extraction-success {
+  background: rgba(52, 199, 89, 0.1);
+  color: var(--accent-green);
+}
+
+/* Error state */
+.extraction-error {
+  background: rgba(255, 59, 48, 0.1);
+  color: var(--accent-red);
+}
+
+/* Icon styling */
+.extraction-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  font-weight: bold;
+  font-size: 12px;
+}
+
+/* ===================================== */
+/* UTILITY CLASSES */
+/* ===================================== */
+
+.hidden {
+  display: none;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.mt-lg {
+  margin-top: var(--spacing-lg);
+}
+
+.mb-lg {
+  margin-bottom: var(--spacing-lg);
+}
+
+/*
+  UTILITY CLASSES:
+  Small reusable classes for common styling needs
+  .hidden = hide element
+  .text-center = center text
+  .mt-lg = margin-top large
+  .mb-lg = margin-bottom large
+*/
