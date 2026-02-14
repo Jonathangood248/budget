@@ -122,8 +122,8 @@ app.get('/api/totals', (req, res) => {
 
 app.post('/api/purchases', (req, res) => {
   try {
-    // Extract data from request body
-    const { name, link, cost, bought, comments } = req.body;
+    // Extract data from request body (including room category)
+    const { name, link, cost, bought, comments, room } = req.body;
 
     // Validate required fields
     if (!name || !name.trim()) {
@@ -134,7 +134,7 @@ app.post('/api/purchases', (req, res) => {
     }
 
     // Add the purchase to the database
-    const newPurchase = db.addPurchase(name, link, cost, bought, comments);
+    const newPurchase = db.addPurchase(name, link, cost, bought, comments, room);
 
     // Send back the newly created purchase (including its ID)
     res.status(201).json(newPurchase);
@@ -165,8 +165,8 @@ app.put('/api/purchases/:id', (req, res) => {
     // Get the ID from the URL (the ":id" part)
     const id = parseInt(req.params.id);
 
-    // Extract updated data from request body
-    const { name, link, cost, bought, comments } = req.body;
+    // Extract updated data from request body (including room category)
+    const { name, link, cost, bought, comments, room } = req.body;
 
     // Validate required fields
     if (!name || !name.trim()) {
@@ -177,7 +177,7 @@ app.put('/api/purchases/:id', (req, res) => {
     }
 
     // Update the purchase in the database
-    const updatedPurchase = db.updatePurchase(id, name, link, cost, bought, comments);
+    const updatedPurchase = db.updatePurchase(id, name, link, cost, bought, comments, room);
 
     // Send back the updated purchase
     res.json(updatedPurchase);

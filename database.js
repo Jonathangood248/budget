@@ -17,6 +17,24 @@
 const Database = require('better-sqlite3');
 const path = require('path');
 
+// =====================================================
+// ROOM CATEGORIES
+// =====================================================
+// These are the rooms in the new house.
+// Used by both the backend (validation) and frontend (dropdowns).
+
+const ROOMS = [
+  'Kitchen',
+  'Bedroom 1',
+  'Bedroom 2',
+  'Bedroom 3',
+  'Living Room (Small)',
+  'Living Room (Big)',
+  'Dining Room',
+  'Bathroom 1',
+  'Bathroom 2'
+];
+
 // Connect to the database file (creates it if it doesn't exist)
 // __dirname means "the folder this file is in"
 // path.join combines folder paths in a way that works on Windows, Mac, and Linux
@@ -51,6 +69,17 @@ function initDatabase() {
 
   // Execute the SQL command
   db.prepare(createTableSQL).run();
+
+  // MIGRATION: Add 'room' column if it doesn't exist
+  // SQLite doesn't have IF NOT EXISTS for ALTER TABLE,
+  // so we check the table info first using PRAGMA
+  const columns = db.prepare("PRAGMA table_info(purchases)").all();
+  const hasRoomColumn = columns.some(col => col.name === 'room');
+
+  if (!hasRoomColumn) {
+    db.prepare("ALTER TABLE purchases ADD COLUMN room TEXT DEFAULT ''").run();
+    console.log('📐 Added "room" column to purchases table');
+  }
 
   console.log('✅ Database initialized successfully');
   console.log(`📁 Database location: ${dbPath}`);
@@ -90,7 +119,7 @@ function getAllPurchases() {
 // Adds a new purchase to the database
 // Parameters: name, link, cost, bought (0 or 1), comments
 
-function addPurchase(name, link, cost, bought, comments) {
+function addPurchase(name, link, cost, bought, comments, room) {
   // Validate required fields
   if (!name || name.trim() === '') {
     throw new Error('Product name is required');
@@ -106,11 +135,11 @@ function addPurchase(name, link, cost, bought, comments) {
   }
 
   // INSERT INTO = add new row to table
-  // (name, link, cost, bought, comments) = columns we're filling
-  // VALUES (?, ?, ?, ?, ?) = placeholders for values (prevents SQL injection attacks)
+  // (name, link, cost, bought, comments, room) = columns we're filling
+  // VALUES (?, ?, ?, ?, ?, ?) = placeholders for values (prevents SQL injection attacks)
   const stmt = db.prepare(`
-    INSERT INTO purchases (name, link, cost, bought, comments)
-    VALUES (?, ?, ?, ?, ?)
+    INSERT INTO purchases (name, link, cost, bought, comments, room)
+    VALUES (?, ?, ?, ?, ?, ?)
   `);
 
   const result = stmt.run(
@@ -118,7 +147,8 @@ function addPurchase(name, link, cost, bought, comments) {
     link || '',
     numericCost,
     bought ? 1 : 0,
-    comments || ''
+    comments || '',
+    room || ''
   );
 
   // Return the newly created purchase (including its new ID)
@@ -128,7 +158,8 @@ function addPurchase(name, link, cost, bought, comments) {
     link: link || '',
     cost: numericCost,
     bought: bought ? 1 : 0,
-    comments: comments || ''
+    comments: comments || '',
+    room: room || ''
   };
 }
 
@@ -143,7 +174,7 @@ function addPurchase(name, link, cost, bought, comments) {
 // Updates a purchase by ID
 // Parameters: id, name, link, cost, bought, comments
 
-function updatePurchase(id, name, link, cost, bought, comments) {
+function updatePurchase(id, name, link, cost, bought, comments, room) {
   // Validate required fields
   if (!name || name.trim() === '') {
     throw new Error('Product name is required');
@@ -163,7 +194,7 @@ function updatePurchase(id, name, link, cost, bought, comments) {
   // WHERE id = ? = only update the row with this specific ID
   const stmt = db.prepare(`
     UPDATE purchases
-    SET name = ?, link = ?, cost = ?, bought = ?, comments = ?
+    SET name = ?, link = ?, cost = ?, bought = ?, comments = ?, room = ?
     WHERE id = ?
   `);
 
@@ -173,6 +204,7 @@ function updatePurchase(id, name, link, cost, bought, comments) {
     numericCost,
     bought ? 1 : 0,
     comments || '',
+    room || '',
     id
   );
 
@@ -187,7 +219,8 @@ function updatePurchase(id, name, link, cost, bought, comments) {
     link: link || '',
     cost: numericCost,
     bought: bought ? 1 : 0,
-    comments: comments || ''
+    comments: comments || '',
+    room: room || ''
   };
 }
 
@@ -270,7 +303,8 @@ module.exports = {
   addPurchase,
   updatePurchase,
   deletePurchase,
-  getTotals
+  getTotals,
+  ROOMS
 };
 
 // HOW TO USE THIS FILE:

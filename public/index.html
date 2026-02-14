@@ -95,6 +95,18 @@
             rows="1"
             class="form-input"
           ></textarea>
+          <select id="new-room" class="form-input">
+            <option value="">Select Room (optional)</option>
+            <option value="Kitchen">Kitchen</option>
+            <option value="Bedroom 1">Bedroom 1</option>
+            <option value="Bedroom 2">Bedroom 2</option>
+            <option value="Bedroom 3">Bedroom 3</option>
+            <option value="Living Room (Small)">Living Room (Small)</option>
+            <option value="Living Room (Big)">Living Room (Big)</option>
+            <option value="Dining Room">Dining Room</option>
+            <option value="Bathroom 1">Bathroom 1</option>
+            <option value="Bathroom 2">Bathroom 2</option>
+          </select>
           <label class="checkbox-label">
             <input
               type="checkbox"
@@ -125,6 +137,64 @@
     <section class="purchases-section">
       <h2 class="section-title">Your Purchases</h2>
 
+      <!-- ===================================== -->
+      <!-- FILTER, SORT & SEARCH CONTROLS -->
+      <!-- ===================================== -->
+      <!--
+        These controls let you filter, sort, and search your purchases.
+        All filtering happens in the browser (client-side) - no extra server requests needed.
+      -->
+      <div class="controls-bar" id="controls-bar">
+        <!-- Status Filter -->
+        <div class="control-group">
+          <label class="control-label">Status</label>
+          <div class="filter-chips" id="status-filter">
+            <button class="chip active" data-status="all">All</button>
+            <button class="chip" data-status="bought">Bought</button>
+            <button class="chip" data-status="not-bought">Not Yet</button>
+          </div>
+        </div>
+
+        <!-- Sort by Cost -->
+        <div class="control-group">
+          <label class="control-label">Sort by Cost</label>
+          <div class="filter-chips" id="sort-controls">
+            <button class="chip active" data-sort="default">Default</button>
+            <button class="chip" data-sort="highest">Highest First</button>
+            <button class="chip" data-sort="lowest">Lowest First</button>
+          </div>
+        </div>
+
+        <!-- Room Filter -->
+        <div class="control-group">
+          <label class="control-label">Room</label>
+          <select id="room-filter" class="filter-select">
+            <option value="all">All Rooms</option>
+            <option value="">Unassigned</option>
+            <option value="Kitchen">Kitchen</option>
+            <option value="Bedroom 1">Bedroom 1</option>
+            <option value="Bedroom 2">Bedroom 2</option>
+            <option value="Bedroom 3">Bedroom 3</option>
+            <option value="Living Room (Small)">Living Room (Small)</option>
+            <option value="Living Room (Big)">Living Room (Big)</option>
+            <option value="Dining Room">Dining Room</option>
+            <option value="Bathroom 1">Bathroom 1</option>
+            <option value="Bathroom 2">Bathroom 2</option>
+          </select>
+        </div>
+
+        <!-- Search -->
+        <div class="control-group control-group-search">
+          <label class="control-label">Search</label>
+          <input
+            type="text"
+            id="search-input"
+            placeholder="Search by name..."
+            class="search-input"
+          >
+        </div>
+      </div>
+
       <!-- Loading state (shown while fetching data) -->
       <div id="loading" class="loading">
         <div class="loading-spinner"></div>
@@ -149,6 +219,7 @@
               <th>Product Name</th>
               <th>Link</th>
               <th>Cost (SEK)</th>
+              <th>Room</th>
               <th>Status</th>
               <th>Comments</th>
               <th>Actions</th>
