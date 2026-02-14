@@ -22,6 +22,17 @@
 
 let purchases = [];
 
+// =====================================================
+// FILTER & SORT STATE
+// =====================================================
+// These variables track the current filter, sort, and search settings.
+// When any of them change, we re-run the filter pipeline to update the table.
+
+let currentStatusFilter = 'all';    // 'all' | 'bought' | 'not-bought'
+let currentSortOrder = 'default';   // 'default' | 'highest' | 'lowest'
+let currentSearchQuery = '';         // Free-text search string
+let currentRoomFilter = 'all';      // 'all' | specific room name | '' for unassigned
+
 // WHAT IS A GLOBAL VARIABLE?
 // A variable declared outside any function that can be accessed anywhere.
 // Think of it as a whiteboard everyone in the room can see and write on.
@@ -40,6 +51,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Set up the "Add Purchase" form
   setupAddPurchaseForm();
+
+  // Set up filter, sort, and search controls
+  setupFilterControls();
 });
 
 // WHAT IS DOMContentLoaded?
@@ -70,8 +84,8 @@ async function fetchPurchases() {
     // Store purchases in global state
     purchases = data;
 
-    // Display purchases on the page
-    renderPurchases(purchases);
+    // Apply any active filters and display purchases
+    applyFiltersAndRender();
 
     console.log(`✅ Loaded ${purchases.length} purchases`);
   } catch (error) {
@@ -127,6 +141,53 @@ async function fetchTotals() {
 }
 
 // =====================================================
+// FILTER PIPELINE
+// =====================================================
+// This function applies all active filters, sort, and search to the purchases
+// array, then renders the result. Called whenever filters change or data updates.
+//
+// WHAT IS A FILTER PIPELINE?
+// Think of it like water flowing through multiple filters:
+// 1. First filter removes items by status (bought/not bought)
+// 2. Second filter removes items by room
+// 3. Third filter removes items that don't match your search
+// 4. Finally, sorting arranges the remaining items
+// Only the items that pass ALL filters are shown in the table.
+
+function applyFiltersAndRender() {
+  // Start with a copy of all purchases (never mutate the original array)
+  let filtered = [...purchases];
+
+  // Step 1: Filter by bought status
+  if (currentStatusFilter === 'bought') {
+    filtered = filtered.filter(p => p.bought === 1);
+  } else if (currentStatusFilter === 'not-bought') {
+    filtered = filtered.filter(p => p.bought === 0);
+  }
+
+  // Step 2: Filter by room
+  if (currentRoomFilter !== 'all') {
+    filtered = filtered.filter(p => (p.room || '') === currentRoomFilter);
+  }
+
+  // Step 3: Filter by search query (case-insensitive partial match)
+  if (currentSearchQuery) {
+    const query = currentSearchQuery.toLowerCase();
+    filtered = filtered.filter(p => p.name.toLowerCase().includes(query));
+  }
+
+  // Step 4: Sort by cost
+  if (currentSortOrder === 'highest') {
+    filtered.sort((a, b) => b.cost - a.cost);
+  } else if (currentSortOrder === 'lowest') {
+    filtered.sort((a, b) => a.cost - b.cost);
+  }
+  // 'default' keeps the API order (created_at DESC)
+
+  renderPurchases(filtered);
+}
+
+// =====================================================
 // RENDER PURCHASES (DISPLAY IN TABLE)
 // =====================================================
 
@@ -144,8 +205,15 @@ function renderPurchases(purchasesList) {
   loading.style.display = 'none';
   errorDiv.style.display = 'none';
 
-  // Check if there are no purchases
+  // Check if there are no purchases to display
   if (purchasesList.length === 0) {
+    // Distinguish between "no data at all" vs "no filter matches"
+    const emptyP = emptyState.querySelector('p') || emptyState;
+    if (purchases.length === 0) {
+      emptyP.textContent = 'No purchases yet. Add your first purchase above!';
+    } else {
+      emptyP.textContent = 'No purchases match your current filters.';
+    }
     emptyState.style.display = 'block';
     tableContainer.style.display = 'none';
     return;
@@ -192,6 +260,11 @@ function createPurchaseRow(purchase) {
       ${purchase.link ? `<a href="${escapeHtml(purchase.link)}" target="_blank" class="product-link">View Link</a>` : '<span style="color: #999;">No link</span>'}
     </td>
     <td class="editable" data-field="cost">${formatCurrency(purchase.cost)}</td>
+    <td class="editable" data-field="room">
+      <span class="room-badge ${purchase.room ? '' : 'room-none'}">
+        ${escapeHtml(purchase.room || 'Unassigned')}
+      </span>
+    </td>
     <td>
       <label class="status-label">
         <input
@@ -260,9 +333,24 @@ function makeEditable(cell, purchaseId) {
   // Get current value
   const currentValue = cell.textContent.trim();
 
-  // Create input field
+  // Create the appropriate input element based on field type
   let input;
-  if (field === 'comments') {
+  if (field === 'room') {
+    // Room field uses a dropdown select
+    input = document.createElement('select');
+    const rooms = ['', 'Kitchen', 'Bedroom 1', 'Bedroom 2', 'Bedroom 3',
+                   'Living Room (Small)', 'Living Room (Big)', 'Dining Room',
+                   'Bathroom 1', 'Bathroom 2'];
+    rooms.forEach(room => {
+      const option = document.createElement('option');
+      option.value = room;
+      option.textContent = room || 'Unassigned';
+      if (room === (currentValue === 'Unassigned' ? '' : currentValue)) {
+        option.selected = true;
+      }
+      input.appendChild(option);
+    });
+  } else if (field === 'comments') {
     input = document.createElement('textarea');
     input.rows = 2;
   } else if (field === 'cost') {
@@ -283,25 +371,37 @@ function makeEditable(cell, purchaseId) {
   cell.appendChild(input);
   input.focus();
 
+  // Guard against double-saving (blur + change can fire together on selects)
+  let saved = false;
+
   // Save when Enter is pressed or when clicking outside
   const saveEdit = async () => {
+    if (saved) return;
+    saved = true;
+
     const newValue = input.value.trim();
 
     // Get the full purchase data
     const purchase = purchases.find(p => p.id === purchaseId);
 
-    // Create updated purchase object
+    // Create updated purchase object (include room field)
     const updatedData = {
       name: field === 'name' ? newValue : purchase.name,
       link: field === 'link' ? newValue : purchase.link,
       cost: field === 'cost' ? parseFloat(newValue) : purchase.cost,
       bought: purchase.bought,
-      comments: field === 'comments' ? newValue : purchase.comments
+      comments: field === 'comments' ? newValue : purchase.comments,
+      room: field === 'room' ? newValue : (purchase.room || '')
     };
 
     // Update via API
     await updatePurchase(purchaseId, updatedData);
   };
+
+  // For select dropdowns, also save on change
+  if (field === 'room') {
+    input.addEventListener('change', saveEdit);
+  }
 
   // Save on Enter key
   input.addEventListener('keydown', (e) => {
@@ -342,6 +442,52 @@ function renderTotals(totals) {
 // WHAT IS textContent?
 // textContent = the text inside an element (no HTML)
 // element.textContent = 'Hello' sets the text to "Hello"
+
+// =====================================================
+// FILTER, SORT & SEARCH CONTROLS
+// =====================================================
+// Sets up event listeners for the filter chips, sort chips,
+// room dropdown, and search input in the controls bar.
+
+function setupFilterControls() {
+  // --- Status filter chips ---
+  // When a chip is clicked, update the filter and re-render
+  const statusChips = document.querySelectorAll('#status-filter .chip');
+  statusChips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      statusChips.forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      currentStatusFilter = chip.dataset.status;
+      applyFiltersAndRender();
+    });
+  });
+
+  // --- Sort chips ---
+  const sortChips = document.querySelectorAll('#sort-controls .chip');
+  sortChips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      sortChips.forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      currentSortOrder = chip.dataset.sort;
+      applyFiltersAndRender();
+    });
+  });
+
+  // --- Search input ---
+  // Uses 'input' event for real-time filtering as the user types
+  const searchInput = document.getElementById('search-input');
+  searchInput.addEventListener('input', (e) => {
+    currentSearchQuery = e.target.value.trim();
+    applyFiltersAndRender();
+  });
+
+  // --- Room filter dropdown ---
+  const roomFilter = document.getElementById('room-filter');
+  roomFilter.addEventListener('change', (e) => {
+    currentRoomFilter = e.target.value;
+    applyFiltersAndRender();
+  });
+}
 
 // =====================================================
 // LINK EXTRACTION - NEW FEATURE
@@ -499,6 +645,7 @@ function setupAddPurchaseForm() {
     const cost = parseFloat(document.getElementById('new-cost').value);
     const bought = document.getElementById('new-bought').checked;
     const comments = document.getElementById('new-comments').value.trim();
+    const room = document.getElementById('new-room').value;
 
     // Validate
     if (!name) {
@@ -510,8 +657,8 @@ function setupAddPurchaseForm() {
       return;
     }
 
-    // Create purchase object
-    const newPurchase = { name, link, cost, bought, comments };
+    // Create purchase object (including room)
+    const newPurchase = { name, link, cost, bought, comments, room };
 
     // Add via API
     await addPurchase(newPurchase);
@@ -603,13 +750,14 @@ async function updatePurchaseStatus(id, bought) {
     // Find the purchase in our local state
     const purchase = purchases.find(p => p.id === id);
 
-    // Create updated purchase object
+    // Create updated purchase object (preserve room when toggling status)
     const updatedData = {
       name: purchase.name,
       link: purchase.link,
       cost: purchase.cost,
       bought: bought ? 1 : 0,
-      comments: purchase.comments
+      comments: purchase.comments,
+      room: purchase.room || ''
     };
 
     // Update via API
