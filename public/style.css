@@ -40,30 +40,41 @@
 */
 
 /* ===================================== */
-/* TYPOGRAPHY & COLORS (APPLE STYLE) */
+/* TYPOGRAPHY & COLORS (INTERIOR MAGAZINE STYLE) */
 /* ===================================== */
 
 :root {
-  /* Color Palette - Apple-inspired neutral tones */
-  --bg-primary: #ffffff;
-  --bg-secondary: #fafafa;
-  --bg-tertiary: #f5f5f7;
+  /* Color Palette - Warm, inviting interior magazine colors */
+  --bg-primary: #fefbf6;
+  --bg-secondary: #fff8f0;
+  --bg-gradient: linear-gradient(135deg, #fef5e7 0%, #fff8f0 50%, #f4e8d8 100%);
 
-  --text-primary: #1d1d1f;
-  --text-secondary: #6e6e73;
-  --text-tertiary: #86868b;
+  --text-primary: #2d2a26;
+  --text-secondary: #6b635a;
+  --text-tertiary: #9b9389;
 
-  --accent-blue: #007aff;
-  --accent-blue-hover: #0051d5;
-  --accent-green: #34c759;
-  --accent-red: #ff3b30;
+  /* Accent Colors - Warm, playful palette inspired by interior design */
+  --accent-terracotta: #d4745f;
+  --accent-terracotta-hover: #c4624f;
+  --accent-sage: #8a9a7b;
+  --accent-sage-hover: #7a8a6b;
+  --accent-mustard: #e8b44f;
+  --accent-coral: #ff8c69;
+  --accent-teal: #5ba89a;
+  --accent-plum: #9c6b98;
 
-  --border-light: #d2d2d7;
-  --border-medium: #b0b0b5;
+  --accent-green: #7fb069;
+  --accent-red: #e07856;
+  --accent-blue: #6c9bd1;
 
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
-  --shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.08);
+  --border-light: #e8dfd2;
+  --border-medium: #d4c5b0;
+
+  /* Playful shadows with warm tones */
+  --shadow-sm: 0 2px 8px rgba(212, 116, 95, 0.08);
+  --shadow-md: 0 4px 16px rgba(212, 116, 95, 0.12);
+  --shadow-lg: 0 8px 32px rgba(212, 116, 95, 0.16);
+  --shadow-colored: 0 4px 20px rgba(138, 154, 123, 0.2);
 
   /* Spacing */
   --spacing-xs: 8px;
@@ -73,10 +84,11 @@
   --spacing-xl: 32px;
   --spacing-2xl: 48px;
 
-  /* Border Radius */
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
+  /* Border Radius - More playful, rounded */
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-xl: 32px;
 }
 
 /*
@@ -90,11 +102,48 @@
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
-  background-color: var(--bg-secondary);
+  background: var(--bg-gradient);
   color: var(--text-primary);
   line-height: 1.6;
   font-size: 16px;
   min-height: 100vh;
+  position: relative;
+}
+
+/* Decorative background elements */
+body::before {
+  content: '';
+  position: fixed;
+  top: -50%;
+  right: -10%;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(138, 154, 123, 0.15) 0%, transparent 70%);
+  border-radius: 50%;
+  z-index: -1;
+  animation: float 20s ease-in-out infinite;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  bottom: -30%;
+  left: -10%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(212, 116, 95, 0.12) 0%, transparent 70%);
+  border-radius: 50%;
+  z-index: -1;
+  animation: float 15s ease-in-out infinite reverse;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(30px, 30px) scale(1.1);
+  }
 }
 
 /*
@@ -132,11 +181,31 @@ body {
 }
 
 .headline {
-  font-size: 48px;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  color: var(--text-primary);
+  font-size: 56px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  background: linear-gradient(135deg, var(--accent-terracotta) 0%, var(--accent-plum) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin-bottom: var(--spacing-sm);
+  position: relative;
+  display: inline-block;
+}
+
+.headline::after {
+  content: '🏡';
+  position: absolute;
+  top: -10px;
+  right: -50px;
+  font-size: 32px;
+  animation: wiggle 3s ease-in-out infinite;
+}
+
+@keyframes wiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-10deg); }
+  75% { transform: rotate(10deg); }
 }
 
 /*
@@ -156,11 +225,26 @@ body {
 /* ===================================== */
 
 .totals-section {
-  background: var(--bg-primary);
-  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(254, 251, 246, 0.9) 100%);
+  backdrop-filter: blur(10px);
+  border-radius: var(--radius-xl);
   padding: var(--spacing-xl);
   margin-bottom: var(--spacing-xl);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-lg);
+  border: 2px solid rgba(212, 116, 95, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.totals-section::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -5%;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(232, 180, 79, 0.15) 0%, transparent 70%);
+  border-radius: 50%;
 }
 
 .totals-grid {
@@ -182,38 +266,60 @@ body {
 
 .total-card {
   text-align: center;
-  padding: var(--spacing-lg);
-  background: var(--bg-tertiary);
-  border-radius: var(--radius-md);
-  transition: transform 0.2s ease;
+  padding: var(--spacing-xl);
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: var(--radius-lg);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 2px solid transparent;
+  position: relative;
+  z-index: 1;
 }
 
 .total-card:hover {
-  transform: translateY(-2px);
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: var(--shadow-colored);
+  border-color: rgba(212, 116, 95, 0.3);
 }
 
-/*
-  HOVER EFFECT:
-  When you hover over a card, it moves up 2 pixels.
-  transform: translateY(-2px) = move up (negative Y)
-  transition = smooth animation (0.2 seconds)
-*/
+/* Fun decorative icons for each card */
+.total-card::before {
+  content: '💰';
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 24px;
+  opacity: 0.3;
+  transition: all 0.3s ease;
+}
+
+.total-card:hover::before {
+  opacity: 0.6;
+  transform: scale(1.2) rotate(15deg);
+}
 
 .total-cost-card {
-  background: linear-gradient(135deg, #007aff 0%, #0051d5 100%);
+  background: linear-gradient(135deg, var(--accent-terracotta) 0%, var(--accent-coral) 100%);
   color: white;
+  border: none;
 }
 
-/*
-  linear-gradient = smooth color transition
-  135deg = diagonal direction
-  #007aff 0% = start color
-  #0051d5 100% = end color
-*/
+.total-cost-card::before {
+  content: '🏠';
+}
 
 .total-cost-card .total-label,
 .total-cost-card .total-value {
   color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Add different icons for each card type */
+.total-card:nth-child(2)::before {
+  content: '📦';
+}
+
+.total-card:nth-child(3)::before {
+  content: '🎯';
 }
 
 .total-label {
@@ -236,18 +342,50 @@ body {
 /* ===================================== */
 
 .add-purchase-section {
-  background: var(--bg-primary);
-  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(254, 251, 246, 0.9) 100%);
+  backdrop-filter: blur(10px);
+  border-radius: var(--radius-xl);
   padding: var(--spacing-xl);
   margin-bottom: var(--spacing-xl);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-lg);
+  border: 2px solid rgba(138, 154, 123, 0.15);
+  position: relative;
+  overflow: hidden;
+}
+
+.add-purchase-section::after {
+  content: '✨';
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  font-size: 48px;
+  opacity: 0.1;
+  animation: sparkle 4s ease-in-out infinite;
+}
+
+@keyframes sparkle {
+  0%, 100% { opacity: 0.1; transform: scale(1); }
+  50% { opacity: 0.3; transform: scale(1.2); }
 }
 
 .section-title {
-  font-size: 24px;
-  font-weight: 600;
+  font-size: 28px;
+  font-weight: 700;
   margin-bottom: var(--spacing-lg);
-  color: var(--text-primary);
+  color: var(--accent-terracotta);
+  position: relative;
+  display: inline-block;
+}
+
+.section-title::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  width: 60px;
+  height: 4px;
+  background: linear-gradient(90deg, var(--accent-mustard), var(--accent-coral));
+  border-radius: 2px;
 }
 
 .form-grid {
@@ -262,19 +400,26 @@ body {
 */
 
 .form-input {
-  padding: var(--spacing-sm) var(--spacing-md);
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-sm);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border: 2px solid var(--border-light);
+  border-radius: var(--radius-md);
   font-size: 16px;
   font-family: inherit;
-  transition: all 0.2s ease;
-  background: var(--bg-primary);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: rgba(255, 255, 255, 0.8);
 }
 
 .form-input:focus {
   outline: none;
-  border-color: var(--accent-blue);
-  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+  border-color: var(--accent-sage);
+  background: white;
+  box-shadow: 0 0 0 4px rgba(138, 154, 123, 0.15);
+  transform: translateY(-2px);
+}
+
+.form-input::placeholder {
+  color: var(--text-tertiary);
+  opacity: 0.6;
 }
 
 /*
@@ -314,19 +459,39 @@ body {
 }
 
 .btn-primary {
-  background: var(--accent-blue);
+  background: linear-gradient(135deg, var(--accent-sage) 0%, var(--accent-teal) 100%);
   color: white;
   grid-column: span 2; /* Span across 2 columns in the grid */
+  box-shadow: 0 4px 14px rgba(138, 154, 123, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.btn-primary:hover::before {
+  width: 300px;
+  height: 300px;
 }
 
 .btn-primary:hover {
-  background: var(--accent-blue-hover);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(138, 154, 123, 0.4);
 }
 
 .btn-primary:active {
-  transform: translateY(0);
+  transform: translateY(-1px);
 }
 
 /*
@@ -354,11 +519,24 @@ body {
 /* ===================================== */
 
 .purchases-section {
-  background: var(--bg-primary);
-  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(254, 251, 246, 0.9) 100%);
+  backdrop-filter: blur(10px);
+  border-radius: var(--radius-xl);
   padding: var(--spacing-xl);
   margin-bottom: var(--spacing-xl);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-lg);
+  border: 2px solid rgba(212, 116, 95, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.purchases-section::before {
+  content: '🛋️';
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  font-size: 42px;
+  opacity: 0.1;
 }
 
 .table-container {
@@ -398,11 +576,24 @@ body {
 }
 
 .purchases-table tbody tr {
-  transition: background-color 0.15s ease;
+  transition: all 0.3s ease;
+  position: relative;
 }
 
 .purchases-table tbody tr:hover {
-  background: var(--bg-tertiary);
+  background: linear-gradient(90deg, rgba(232, 180, 79, 0.08) 0%, rgba(138, 154, 123, 0.08) 100%);
+  transform: scale(1.01);
+}
+
+.purchases-table tbody tr:hover::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(180deg, var(--accent-terracotta), var(--accent-mustard));
+  border-radius: 0 4px 4px 0;
 }
 
 /*
@@ -434,14 +625,27 @@ body {
 
 /* Product link styling */
 .product-link {
-  color: var(--accent-blue);
+  color: var(--accent-teal);
   text-decoration: none;
-  transition: color 0.2s ease;
+  transition: all 0.2s ease;
+  font-weight: 500;
+  position: relative;
+}
+
+.product-link::after {
+  content: '🔗';
+  margin-left: 4px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
 }
 
 .product-link:hover {
-  color: var(--accent-blue-hover);
-  text-decoration: underline;
+  color: var(--accent-sage);
+  text-decoration: none;
+}
+
+.product-link:hover::after {
+  opacity: 1;
 }
 
 /* Status badge */
@@ -449,20 +653,33 @@ body {
   display: inline-flex;
   align-items: center;
   gap: var(--spacing-xs);
-  padding: 4px 12px;
-  border-radius: 12px;
+  padding: 6px 14px;
+  border-radius: 20px;
   font-size: 13px;
   font-weight: 600;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
 }
 
 .status-badge.bought {
-  background: rgba(52, 199, 89, 0.1);
+  background: linear-gradient(135deg, rgba(127, 176, 105, 0.2) 0%, rgba(138, 154, 123, 0.2) 100%);
   color: var(--accent-green);
+  border-color: var(--accent-green);
+}
+
+.status-badge.bought::before {
+  content: '✓ ';
+  font-weight: bold;
 }
 
 .status-badge.not-bought {
-  background: rgba(142, 142, 147, 0.1);
+  background: rgba(155, 147, 137, 0.1);
   color: var(--text-tertiary);
+  border-color: var(--border-light);
+}
+
+.status-badge.not-bought::before {
+  content: '⏳ ';
 }
 
 /* Status checkbox */
