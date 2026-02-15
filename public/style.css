@@ -582,7 +582,6 @@ body::after {
 
 .purchases-table tbody tr:hover {
   background: linear-gradient(90deg, rgba(232, 180, 79, 0.08) 0%, rgba(138, 154, 123, 0.08) 100%);
-  transform: scale(1.01);
 }
 
 .purchases-table tbody tr:hover::before {
